@@ -4,7 +4,7 @@ from json  import dumps
 app = Flask(__name__)
 
 
-@app.route('/', methods = ['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/', methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'])
 def log():
 
     data = {
