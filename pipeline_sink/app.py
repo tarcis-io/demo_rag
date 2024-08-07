@@ -11,8 +11,7 @@ kubeflow_client = Client(host = kubeflow_host)
 @app.route('/index_document', methods = ['POST'])
 def index_document():
 
-    pipeline_yaml = path.join('yaml', 'index_document.yaml')
-
+    pipeline_yaml      = path.join('yaml', 'index_document.yaml')
     pipeline_arguments = {
         'pvc_name'                           : getenv('PVC_NAME'),
         'pvc_storage_class'                  : getenv('PVC_STORAGE_CLASS'),
