@@ -8,7 +8,7 @@ app = Flask(__name__)
 def log():
 
     data = {
-        'headers' : to_dict(request.headers),
+#        'headers' : to_dict(request.headers),
         'args'    : to_dict(request.args),
         'form'    : to_dict(request.form),
         'files'   : to_dict(request.files),
