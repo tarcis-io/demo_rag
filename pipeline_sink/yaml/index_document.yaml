@@ -156,16 +156,14 @@ deploymentSpec:
           \      : str,\n    s3_access_key_id     : str,\n    s3_secret_access_key\
           \ : str,\n    s3_region            : str,\n    s3_bucket            : str,\n\
           \    s3_file              : str,\n    pvc_directory        : str\n) -> str:\n\
-          \n    from boto3 import client\n    from os    import makedirs, path\n\n\
-          \    pvc_directory = path.join(pvc_directory, 'documents')\n    pvc_file\
-          \      = path.join(pvc_directory, path.basename(s3_file))\n\n    makedirs(\n\
-          \        name     = pvc_directory,\n        exist_ok = True\n    )\n\n \
-          \   s3_client = client(\n        service_name          = s3_service_name,\n\
-          \        endpoint_url          = s3_endpoint_url,\n        aws_access_key_id\
-          \     = s3_access_key_id,\n        aws_secret_access_key = s3_secret_access_key,\n\
-          \        region_name           = s3_region\n    )\n\n    s3_client.download_file(\n\
-          \        Bucket   = s3_bucket,\n        Key      = s3_file,\n        Filename\
-          \ = pvc_file\n    )\n\n    return pvc_file\n\n"
+          \n    from boto3 import client\n    from os    import path\n\n    pvc_file\
+          \ = path.join(pvc_directory, path.basename(s3_file))\n\n    s3_client =\
+          \ client(\n        service_name          = s3_service_name,\n        endpoint_url\
+          \          = s3_endpoint_url,\n        aws_access_key_id     = s3_access_key_id,\n\
+          \        aws_secret_access_key = s3_secret_access_key,\n        region_name\
+          \           = s3_region\n    )\n\n    s3_client.download_file(\n       \
+          \ Bucket   = s3_bucket,\n        Key      = s3_file,\n        Filename =\
+          \ pvc_file\n    )\n\n    return pvc_file\n\n"
         image: registry.access.redhat.com/ubi9/python-311
     exec-index-document:
       container:
@@ -202,16 +200,16 @@ deploymentSpec:
           \              : str\n):\n\n    from elasticsearch              import Elasticsearch\n\
           \    from langchain.document_loaders import PyPDFLoader\n    from langchain.embeddings\
           \       import TensorflowHubEmbeddings\n    from langchain.vectorstores\
-          \     import ElasticsearchStore\n\n    loader    = PyPDFLoader(pvc_file)\n\
-          \    documents = loader.load_and_split()\n\n    elasticsearch_client = Elasticsearch(\n\
-          \        hosts        = elasticsearch_host,\n        basic_auth   = (elasticsearch_username,\
-          \ elasticsearch_password),\n        verify_certs = False\n    )\n\n    embedding\
-          \ = TensorflowHubEmbeddings(\n        model_url = tensorflow_hub_embedding_model_url\n\
-          \    )\n\n    elasticsearch_store = ElasticsearchStore(\n        es_connection\
-          \ = elasticsearch_client,\n        index_name    = elasticsearch_index,\n\
-          \        embedding     = embedding\n    )\n\n    elasticsearch_store.add_documents(\n\
-          \        documents = documents\n    )\n\n    elasticsearch_store.client.indices.refresh(\n\
-          \        index = elasticsearch_index\n    )\n\n"
+          \     import ElasticsearchStore\n\n    pdf_loader = PyPDFLoader(file_path\
+          \ = pvc_file)\n    documents  = pdf_loader.load_and_split()\n\n    elasticsearch_client\
+          \ = Elasticsearch(\n        hosts        = elasticsearch_host,\n       \
+          \ basic_auth   = (elasticsearch_username, elasticsearch_password),\n   \
+          \     verify_certs = False\n    )\n\n    embedding = TensorflowHubEmbeddings(model_url\
+          \ = tensorflow_hub_embedding_model_url)\n\n    elasticsearch_store = ElasticsearchStore(\n\
+          \        es_connection = elasticsearch_client,\n        index_name    =\
+          \ elasticsearch_index,\n        embedding     = embedding\n    )\n\n   \
+          \ elasticsearch_store.add_documents(documents = documents)\n    elasticsearch_store.client.indices.refresh(index\
+          \ = elasticsearch_index)\n\n"
         image: registry.access.redhat.com/ubi9/python-311
 pipelineInfo:
   description: Index document pipeline
@@ -247,7 +245,7 @@ root:
           parameters:
             pvc_directory:
               runtimeValue:
-                constant: /index_document
+                constant: /pipeline/index_document
             s3_access_key_id:
               componentInputParameter: s3_access_key_id
             s3_bucket:
@@ -333,8 +331,8 @@ platforms:
         exec-download-document:
           pvcMount:
           - componentInputParameter: pvc_name
-            mountPath: /index_document
+            mountPath: /pipeline/index_document
         exec-index-document:
           pvcMount:
           - componentInputParameter: pvc_name
-            mountPath: /index_document
+            mountPath: /pipeline/index_document
