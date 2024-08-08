@@ -52,4 +52,4 @@ def index_document():
         arguments     = pipeline_arguments
     )
 
-    return 'index_document.yaml pipeline run created!'
+    return f'pipeline run: { pipeline_yaml }'
