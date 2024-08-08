@@ -17,9 +17,7 @@ ELASTICSEARCH_USERNAME             = getenv('ELASTICSEARCH_USERNAME')
 ELASTICSEARCH_PASSWORD             = getenv('ELASTICSEARCH_PASSWORD')
 ELASTICSEARCH_INDEX                = getenv('ELASTICSEARCH_INDEX')
 TENSORFLOW_HUB_EMBEDDING_MODEL_URL = getenv('TENSORFLOW_HUB_EMBEDDING_MODEL_URL')
-
-KUBEFLOW_HOST   = getenv('KUBEFLOW_HOST')
-kubeflow_client = Client(host = KUBEFLOW_HOST)
+KUBEFLOW_HOST                      = getenv('KUBEFLOW_HOST')
 
 app = Flask(__name__)
 
@@ -47,9 +45,19 @@ def index_document():
         'tensorflow_hub_embedding_model_url' : TENSORFLOW_HUB_EMBEDDING_MODEL_URL
     }
 
+    run_pipeline(
+        pipeline_yaml      = pipeline_yaml,
+        pipeline_arguments = pipeline_arguments
+    )
+
+    return f'pipeline run: { pipeline_yaml }'
+
+
+def run_pipeline(pipeline_yaml : str, pipeline_arguments : dict):
+
+    kubeflow_client = Client(host = KUBEFLOW_HOST)
+
     kubeflow_client.create_run_from_pipeline_package(
         pipeline_file = pipeline_yaml,
         arguments     = pipeline_arguments
     )
-
-    return f'pipeline run: { pipeline_yaml }'
