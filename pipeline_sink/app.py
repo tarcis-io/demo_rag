@@ -19,7 +19,8 @@ ELASTICSEARCH_INDEX                = getenv('ELASTICSEARCH_INDEX')
 TENSORFLOW_HUB_EMBEDDING_MODEL_URL = getenv('TENSORFLOW_HUB_EMBEDDING_MODEL_URL')
 KUBEFLOW_HOST                      = getenv('KUBEFLOW_HOST')
 
-app = Flask(__name__)
+app             = Flask(__name__)
+kubeflow_client = Client(host = KUBEFLOW_HOST)
 
 
 @app.route('/index_document', methods = ['POST'])
@@ -45,7 +46,9 @@ def index_document() -> str:
         'tensorflow_hub_embedding_model_url' : TENSORFLOW_HUB_EMBEDDING_MODEL_URL
     }
 
-    kubeflow_client = Client(KUBEFLOW_HOST)
-    kubeflow_client.create_run_from_pipeline_package(pipeline_yaml, pipeline_arguments)
+    kubeflow_client.create_run_from_pipeline_package(
+        pipeline_file = pipeline_yaml,
+        arguments     = pipeline_arguments
+    )
 
     return f'pipeline run : { pipeline_yaml }'
