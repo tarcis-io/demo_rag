@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 
 @app.route('/', methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'])
-def log():
+def log() -> str:
 
     data = {
         'headers' : to_dict(request.headers),
@@ -21,4 +21,6 @@ def log():
     return data
 
 
-def to_dict(data): return data.to_dict(flat = False) if 'to_dict' in dir(data) else dict(data)
+def to_dict(data) -> dict:
+
+    return data.to_dict(flat = False) if 'to_dict' in dir(data) else dict(data)
