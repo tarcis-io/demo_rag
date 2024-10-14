@@ -41,7 +41,7 @@ elasticsearch_store = ElasticsearchStore(
 llm = ChatGoogleGenerativeAI(
     google_api_key = GOOGLE_API_KEY,
     model          = GOOGLE_MODEL,
-    max_tokens     = GOOGLE_MODEL_MAX_TOKENS
+    max_tokens     = int(GOOGLE_MODEL_MAX_TOKENS)
 )
 
 retrieval_qa = RetrievalQA.from_llm(
