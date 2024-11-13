@@ -102,7 +102,8 @@ def handle_message() -> dict:
 
             except Exception as exception:
 
-                response_text = f'Error when calling LLM: { exception.message }'
+                response_text = 'Error when calling LLM, please try again.'
+                print(f'Error: { exception.message }')
 
         # send text response
 
